@@ -12,7 +12,7 @@ using web_api.Data;
 namespace web_api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20251105095604_initial")]
+    [Migration("20251106190316_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -250,6 +250,190 @@ namespace web_api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("web_api.Entities.Appointment", b =>
+                {
+                    b.Property<string>("AppointmentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BranchId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ScheduledDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AppointmentId");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("web_api.Entities.Branch", b =>
+                {
+                    b.Property<string>("BranchId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BranchId");
+
+                    b.ToTable("Branches");
+
+                    b.HasData(
+                        new
+                        {
+                            BranchId = "7eba0399-3a20-4e0b-b8e6-f781574c460f",
+                            Location = "Sandton",
+                            Name = "Business Branch"
+                        },
+                        new
+                        {
+                            BranchId = "6a71b3ce-ad5b-4ff8-9e77-17b4f1202ca2",
+                            Location = "Cape Town",
+                            Name = "Main Branch"
+                        });
+                });
+
+            modelBuilder.Entity("web_api.Entities.Invoice", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("web_api.Entities.InvoiceNotification", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("InvoiceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SentDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceNotification");
+                });
+
+            modelBuilder.Entity("web_api.Entities.Transaction", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("web_api.Entities.TransactionDispute", b =>
+                {
+                    b.Property<string>("TransactionDisputeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DisputeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResolutionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResolutionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("TransactionDisputeId");
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
+                    b.ToTable("TransactionDisputes");
+                });
+
             modelBuilder.Entity("web_api.Entities.Role", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
@@ -262,14 +446,14 @@ namespace web_api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e9b68fbc-96a8-41ca-ab14-1e07c00762c9",
+                            Id = "1e186cf2-12e7-4d3e-b8bd-ff5d5aad9132",
                             Name = "admin",
                             NormalizedName = "ADMIN",
                             Active = true
                         },
                         new
                         {
-                            Id = "519181c8-a6fb-44a8-8814-7616e05b5ff2",
+                            Id = "7388eaf1-b867-43ab-bba4-dd7bb4bff22d",
                             Name = "user",
                             NormalizedName = "USER",
                             Active = true
@@ -306,41 +490,41 @@ namespace web_api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "eeb7678a-2f94-40b8-aeea-0347df345c1f",
+                            Id = "b2f605c6-07c7-47fe-a443-22eddf538c7d",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c9fdf8b3-5c6d-4231-a18e-bd01265bcb5d",
+                            ConcurrencyStamp = "3db249cd-f4bd-4783-a15c-9c8a81269514",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "79dbb122-b8e9-4389-a012-3aede5d50d79",
+                            SecurityStamp = "0fa1944a-5352-4709-b9ef-f894cfdd0140",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             Deactivated = false,
                             EmailAddress = "",
                             FirstName = "",
-                            HashedPassword = new byte[] { 213, 86, 60, 42, 67, 254, 211, 197, 93, 93, 13, 220, 114, 204, 229, 39, 62, 118, 55, 31, 122, 216, 195, 114, 220, 171, 36, 213, 21, 233, 254, 229, 235, 56, 122, 26, 103, 55, 226, 154, 173, 24, 166, 34, 172, 186, 219, 145, 74, 75, 157, 225, 83, 211, 30, 35, 144, 150, 129, 2, 22, 42, 36, 55 },
+                            HashedPassword = new byte[] { 232, 137, 206, 177, 135, 208, 20, 218, 89, 128, 144, 88, 196, 223, 137, 200, 5, 48, 255, 92, 253, 205, 8, 210, 41, 147, 15, 187, 112, 125, 38, 111, 71, 63, 160, 143, 50, 4, 38, 40, 254, 50, 151, 106, 227, 139, 3, 111, 90, 166, 188, 67, 20, 227, 185, 47, 235, 206, 230, 108, 221, 98, 2, 130 },
                             LastName = "",
-                            SaltPassword = new byte[] { 22, 107, 27, 120, 178, 154, 178, 15, 113, 5, 181, 160, 101, 44, 248, 52, 97, 85, 232, 35, 245, 197, 178, 58, 49, 121, 115, 129, 134, 127, 92, 167, 35, 5, 152, 174, 186, 71, 43, 213, 103, 141, 207, 4, 153, 36, 134, 240, 32, 81, 83, 8, 58, 204, 120, 59, 167, 104, 186, 56, 187, 89, 210, 247, 222, 216, 233, 166, 211, 165, 151, 189, 96, 198, 220, 193, 151, 142, 81, 62, 179, 131, 46, 246, 230, 231, 210, 104, 100, 121, 36, 6, 72, 180, 36, 93, 153, 70, 48, 198, 230, 239, 168, 76, 115, 152, 46, 156, 109, 23, 10, 77, 221, 246, 80, 35, 148, 112, 89, 22, 128, 94, 236, 36, 108, 214, 6, 178 }
+                            SaltPassword = new byte[] { 80, 32, 148, 104, 21, 238, 162, 26, 80, 72, 137, 218, 111, 25, 234, 183, 197, 42, 180, 198, 249, 65, 197, 76, 115, 192, 244, 125, 218, 203, 236, 100, 192, 249, 97, 239, 54, 238, 157, 20, 191, 253, 204, 132, 215, 222, 38, 246, 129, 202, 144, 127, 236, 175, 148, 152, 169, 244, 246, 218, 162, 140, 97, 86, 211, 108, 114, 21, 210, 241, 247, 149, 31, 64, 14, 187, 7, 8, 216, 219, 8, 89, 143, 13, 45, 181, 179, 55, 181, 230, 248, 10, 252, 97, 253, 209, 220, 16, 104, 125, 71, 103, 223, 129, 182, 19, 43, 5, 97, 162, 138, 181, 140, 151, 146, 209, 205, 81, 222, 229, 19, 0, 37, 107, 249, 47, 233, 62 }
                         },
                         new
                         {
-                            Id = "57fb9e46-b51c-4d20-b9a0-00f1742d16f2",
+                            Id = "f2f944d7-44db-4213-8395-7bed7a42db69",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d5aadcc2-0c96-4107-a75d-90f073b14fb4",
+                            ConcurrencyStamp = "3d0cd895-06a8-4cb9-80cc-4960491b35ce",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "SYSTEM",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ca1b14d1-6d65-492e-b4e9-b157eaa5867d",
+                            SecurityStamp = "a4ec2c0a-f40b-4eb0-9bc5-db48fde916c4",
                             TwoFactorEnabled = false,
                             UserName = "system",
                             Deactivated = false,
                             EmailAddress = "",
                             FirstName = "",
-                            HashedPassword = new byte[] { 41, 205, 190, 34, 52, 148, 182, 4, 160, 226, 85, 156, 187, 151, 6, 79, 158, 169, 141, 179, 19, 221, 179, 139, 19, 237, 194, 50, 39, 244, 21, 138, 31, 131, 48, 198, 115, 187, 207, 218, 178, 221, 184, 148, 152, 52, 99, 165, 163, 18, 22, 192, 27, 201, 34, 181, 187, 49, 159, 199, 146, 216, 212, 9 },
+                            HashedPassword = new byte[] { 232, 156, 22, 24, 235, 237, 66, 246, 106, 237, 22, 31, 13, 185, 140, 202, 166, 126, 39, 21, 165, 127, 93, 214, 128, 226, 18, 90, 83, 248, 45, 21, 139, 199, 252, 251, 94, 119, 147, 213, 111, 90, 99, 100, 36, 251, 215, 113, 37, 86, 161, 11, 45, 3, 87, 221, 221, 198, 69, 101, 4, 80, 255, 179 },
                             LastName = "",
-                            SaltPassword = new byte[] { 52, 69, 103, 11, 213, 84, 51, 182, 143, 242, 85, 249, 104, 21, 32, 57, 195, 3, 219, 220, 157, 254, 209, 248, 80, 228, 197, 170, 232, 51, 50, 112, 93, 220, 250, 180, 190, 244, 133, 196, 29, 255, 95, 225, 228, 219, 94, 206, 203, 8, 226, 164, 107, 51, 107, 157, 52, 47, 146, 112, 146, 27, 111, 0, 26, 165, 178, 161, 166, 222, 206, 111, 13, 24, 197, 114, 154, 109, 213, 130, 79, 160, 186, 115, 45, 195, 60, 190, 50, 4, 109, 182, 156, 16, 43, 240, 52, 25, 128, 120, 200, 115, 162, 153, 106, 195, 28, 201, 85, 88, 215, 252, 35, 113, 43, 127, 213, 141, 119, 249, 174, 19, 50, 5, 14, 213, 199, 249 }
+                            SaltPassword = new byte[] { 76, 20, 164, 5, 88, 177, 145, 97, 124, 163, 127, 200, 75, 157, 208, 122, 78, 154, 188, 86, 145, 100, 155, 48, 62, 140, 23, 54, 30, 92, 47, 177, 72, 114, 36, 245, 37, 218, 112, 240, 96, 128, 97, 237, 221, 255, 233, 221, 27, 221, 21, 197, 144, 166, 102, 93, 42, 239, 194, 159, 103, 44, 105, 244, 33, 170, 83, 80, 54, 76, 59, 4, 250, 134, 164, 248, 47, 205, 39, 160, 223, 91, 245, 166, 63, 77, 210, 180, 185, 210, 72, 35, 154, 255, 160, 16, 47, 194, 143, 43, 114, 98, 255, 7, 197, 221, 22, 247, 224, 126, 223, 81, 79, 62, 218, 220, 85, 130, 248, 220, 195, 234, 30, 33, 156, 150, 188, 187 }
                         });
                 });
 
@@ -353,13 +537,13 @@ namespace web_api.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "eeb7678a-2f94-40b8-aeea-0347df345c1f",
-                            RoleId = "e9b68fbc-96a8-41ca-ab14-1e07c00762c9"
+                            UserId = "b2f605c6-07c7-47fe-a443-22eddf538c7d",
+                            RoleId = "1e186cf2-12e7-4d3e-b8bd-ff5d5aad9132"
                         },
                         new
                         {
-                            UserId = "57fb9e46-b51c-4d20-b9a0-00f1742d16f2",
-                            RoleId = "519181c8-a6fb-44a8-8814-7616e05b5ff2"
+                            UserId = "f2f944d7-44db-4213-8395-7bed7a42db69",
+                            RoleId = "7388eaf1-b867-43ab-bba4-dd7bb4bff22d"
                         });
                 });
 
@@ -414,6 +598,63 @@ namespace web_api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("web_api.Entities.Appointment", b =>
+                {
+                    b.HasOne("web_api.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("web_api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("web_api.Entities.Invoice", b =>
+                {
+                    b.HasOne("web_api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("web_api.Entities.InvoiceNotification", b =>
+                {
+                    b.HasOne("web_api.Entities.Invoice", "Invoice")
+                        .WithMany("Notifications")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("web_api.Entities.Transaction", b =>
+                {
+                    b.HasOne("web_api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("web_api.Entities.TransactionDispute", b =>
+                {
+                    b.HasOne("web_api.Entities.Transaction", "Transaction")
+                        .WithOne("Dispute")
+                        .HasForeignKey("web_api.Entities.TransactionDispute", "TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("web_api.Entities.UserRole", b =>
                 {
                     b.HasOne("web_api.Entities.Role", "Role")
@@ -431,6 +672,16 @@ namespace web_api.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("web_api.Entities.Invoice", b =>
+                {
+                    b.Navigation("Notifications");
+                });
+
+            modelBuilder.Entity("web_api.Entities.Transaction", b =>
+                {
+                    b.Navigation("Dispute");
                 });
 
             modelBuilder.Entity("web_api.Entities.Role", b =>

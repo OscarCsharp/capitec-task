@@ -16,8 +16,7 @@ namespace web_api.Repository
             entities = _context.Set<TEntity>();
         }
 
-        public IEnumerable<TEntity> GetAll() =>
-            entities.ToList();
+        public IQueryable<TEntity> GetAll() => entities;
 
         public async Task<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
@@ -42,11 +41,6 @@ namespace web_api.Repository
         {
             entities.Remove(entity);
             await context.SaveChangesAsync();
-        }
-
-        public async Task<int> GetTotalRecord()
-        {
-            return await entities.CountAsync();
         }
 
         public void Dispose()

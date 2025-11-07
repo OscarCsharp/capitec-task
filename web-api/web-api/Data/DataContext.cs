@@ -19,6 +19,13 @@ namespace web_api.Data
             _encryption = encryption;
         }
 
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Branch> Branches { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<TransactionDispute> TransactionDisputes { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -43,8 +50,9 @@ namespace web_api.Data
             var users = new List<User>();
             var roles = new List<Role>();
             var userRoles = new List<UserRole>();
+            var branches = new List<Branch>();
 
-            // Track role name → ID mapping
+            //Track role name → ID mapping
             var roleIdMap = new Dictionary<string, string>();
 
             foreach (var kvp in _defaultSettings.DefaultUsers)
@@ -90,10 +98,25 @@ namespace web_api.Data
                 });
             }
 
+            foreach (var kvp in _defaultSettings.DefaultBranches)
+            {
+                var branchKey = kvp.Key;
+                var defaultBranch = kvp.Value;
+
+                branches.Add(new Branch
+                {
+                    BranchId = Guid.NewGuid().ToString(),
+                    Name = defaultBranch.Name,
+                    Location = defaultBranch.Location     
+                });
+
+            }
+
             // Seed all
             builder.Entity<User>().HasData(users);
             builder.Entity<Role>().HasData(roles);
             builder.Entity<UserRole>().HasData(userRoles);
+            builder.Entity<Branch>().HasData(branches);
         }
     }
 }
