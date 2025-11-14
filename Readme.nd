@@ -1,0 +1,14 @@
+The solution covers all the 3 projects , I have built an API cover all fuctionality then create client app with different views based on role.
+
+You can watch the uploaded videos
+
+Clone the project ,after cloning you will get web-api and clientapp.zip
+
+1. Open the web-api ,then change the connection string to point to local mssql database and make sure the credentials are correct then run the migration :
+update-database
+
+2. Uzip the clientapp , open it with visual code then run npm i then run witn with ng serve -o . Make sure you have angular environment configured
+
+Credentials :
+1. Client : User : system , Password : User1
+2. Client : User : admin , Password : Admin1
