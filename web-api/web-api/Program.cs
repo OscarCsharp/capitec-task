@@ -28,11 +28,24 @@ builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection
 builder.Services.Configure<DefaultSettings>(builder.Configuration.GetSection("DefaultSettings"));
 builder.Services.Configure<DefaultSettings>(builder.Configuration.GetSection("DefaultUsers"));
 
-builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRepository<Role>, Repository<Role>>();
+builder.Services.AddScoped<IRepository<Appointment>, Repository<Appointment>>();
+builder.Services.AddScoped<IRepository<Branch>, Repository<Branch>>();
+builder.Services.AddScoped<IRepository<Invoice>, Repository<Invoice>>();
+builder.Services.AddScoped<IRepository<InvoiceNotification>, Repository<InvoiceNotification>>();
+builder.Services.AddScoped<IRepository<Transaction>, Repository<Transaction>>();
+builder.Services.AddScoped<IRepository<TransactionDispute>, Repository<TransactionDispute>>();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
-
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAppointment, AppointmentService>();
+builder.Services.AddScoped<IInvoice, InvoiceService>();
+builder.Services.AddScoped<IInvoiceNotification, InvoiceNotificationService>();
+builder.Services.AddScoped<ITransaction, TransactionService>();
+builder.Services.AddScoped<ITransactionDispute, TransactionDisputeService>();
+builder.Services.AddScoped<IBranch, BranchService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

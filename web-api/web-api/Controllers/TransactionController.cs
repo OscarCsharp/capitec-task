@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using web_api.Dto;
+using web_api.Entities;
 using web_api.Interface;
 using web_api.Model;
-using web_api.Entities;
 
 namespace web_api.Controllers
 {
@@ -18,53 +19,81 @@ namespace web_api.Controllers
             _disputeService = disputeService;
         }
 
-        [HttpGet]
+        // Transactions
+
+        [HttpGet("GetAllTransactions")]
         public async Task<IActionResult> GetAllTransactions()
         {
-            var transactions = await _transactionService.GetAll();
-            return Ok(transactions);
+            var transactions = await _transactionService.GetAllTransactions();
+            if (transactions == null) return NoContent();
+
+            var transactionDtos = new List<TransactionDto>();
+            foreach (var transaction in transactions) {
+                var transactionDto = await TransactionDataMapping(transaction);
+                transactionDtos.Add(transactionDto);
+            }
+            return Ok(transactionDtos);
         }
 
-        [HttpGet("{searchTerm}")]
+        [HttpGet("GetUserTransactions/{userId}")]
+        public async Task<IActionResult> GetUserTransactions(string userId)
+        {
+            var transactions = await _transactionService.GetAllTransactions();
+            if (transactions == null) return NoContent();
+
+            var userTransactions = transactions.Where(x => x.UserId == userId).ToList();
+
+            var transactionDtos = new List<TransactionDto>();
+            foreach (var transaction in userTransactions)
+            {
+                var transactionDto = await TransactionDataMapping(transaction);
+                transactionDtos.Add(transactionDto);
+            }
+            return Ok(transactionDtos);
+        }
+
+        [HttpGet("GetTransaction/{searchTerm}")]
         public async Task<IActionResult> GetTransaction(string searchTerm)
         {
             var transaction = await _transactionService.GetTransaction(searchTerm);
             if (transaction == null)
                 return NotFound(new { message = "Transaction not found." });
 
-            return Ok(transaction);
+            var transactionDto = await TransactionDataMapping(transaction);
+            return Ok(transactionDto);
         }
 
-        [HttpPost]
+        [HttpPost("AddTransaction")]
         public async Task<IActionResult> AddTransaction([FromBody] TransactionModel model)
         {
-            await _transactionService.Add(model);
+            await _transactionService.AddTransaction(model);
             return Ok(new { message = "Transaction created successfully." });
         }
 
-        [HttpPut("{transactionId}")]
+        [HttpPut("UpdateTransaction/{transactionId}")]
         public async Task<IActionResult> UpdateTransaction(string transactionId, [FromBody] TransactionModel model)
         {
-            await _transactionService.Update(model, transactionId);
+            await _transactionService.UpdateTransaction(model, transactionId);
             return Ok(new { message = "Transaction updated successfully." });
         }
 
-        [HttpDelete("{transactionIdOrUserId}")]
-        public async Task<IActionResult> RemoveTransaction(string transactionIdOrUserId)
+        [HttpDelete("RemoveTransaction/{transactionId}")]
+        public async Task<IActionResult> RemoveTransaction(string transactionId)
         {
-            await _transactionService.Remove(transactionIdOrUserId);
+            await _transactionService.RemoveTransaction(transactionId);
             return Ok(new { message = "Transaction removed successfully." });
         }
 
+        // Transaction Disputes
 
-        [HttpGet]
+        [HttpGet("GetAllTransactionDisputes")]
         public async Task<IActionResult> GetAllTransactionDisputes()
         {
-            var disputes = await _disputeService.GetAll();
+            var disputes = await _disputeService.GetAllTransactionDisputes();
             return Ok(disputes);
         }
 
-        [HttpGet("{searchTerm}")]
+        [HttpGet("GetDispute/{searchTerm}")]
         public async Task<IActionResult> GetDispute(string searchTerm)
         {
             var dispute = await _disputeService.GetTransactionDispute(searchTerm);
@@ -74,31 +103,45 @@ namespace web_api.Controllers
             return Ok(dispute);
         }
 
-        [HttpPost]
+        [HttpPost("AddTransactionDispute")]
         public async Task<IActionResult> AddTransactionDispute([FromBody] TransactionDisputeModel model)
         {
-            await _disputeService.Add(model);
+            await _disputeService.AddTransactionDispute(model);
             return Ok(new { message = "Dispute created successfully." });
         }
 
-        [HttpPut("{disputeId}")]
+        [HttpPut("UpdateTransactionDispute/{disputeId}")]
         public async Task<IActionResult> UpdateTransactionDispute(string disputeId, [FromBody] TransactionDisputeModel model)
         {
-            await _disputeService.Update(model, disputeId);
+            await _disputeService.UpdateTransactionDispute(model, disputeId);
             return Ok(new { message = "Dispute updated successfully." });
         }
 
-        [HttpDelete("{disputeIdOrTransactionId}")]
+        [HttpDelete("RemoveTransactionDispute/{disputeId}")]
         public async Task<IActionResult> RemoveTransactionDispute(string disputeIdOrTransactionId)
         {
-            await _disputeService.Remove(disputeIdOrTransactionId);
+            await _disputeService.RemoveTransactionDispute(disputeIdOrTransactionId);
             return Ok(new { message = "Dispute removed successfully." });
+        }
+
+        private async Task<TransactionDto> TransactionDataMapping(Transaction transaction )
+        {
+            var transactionDisputed = await _disputeService.GetTransactionDispute(transaction.TransactionId);
+            var isDisputed = transactionDisputed != null ? true : false;
+            var data = new TransactionDto 
+            {
+                TransactionId = transaction.TransactionId,
+                CustomerId = transaction.UserId,
+                Amount = transaction.Amount,
+                AccountType = transaction.AccountType,
+                BankName = transaction.BankName,
+                ReferenceNumber = transaction.referenceNumber,
+                AccountNumber = transaction.AccountNumber,
+                IsDisputed = isDisputed
+            };
+            return data;
         }
     }
 }
-
-
-
-
 
 

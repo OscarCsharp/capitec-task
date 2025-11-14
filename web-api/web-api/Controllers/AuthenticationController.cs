@@ -36,8 +36,7 @@ namespace web_api.Controllers
                 if (userProfile == null) return BadRequest(new { message = "Error occured while fetching user profile" });
 
                 var token = await _tokenService.GenerateJWTToken(userProfile.UserName);
-                return Ok(token);
-
+                return Ok(new { token });
             }
             return Unauthorized(new { message = "Username or password is incorrect." });
         }

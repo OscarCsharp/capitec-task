@@ -15,7 +15,7 @@ namespace web_api.Service
             _disputeRepository = disputeRepository;
         }
 
-        public async Task Add(TransactionDisputeModel model)
+        public async Task AddTransactionDispute(TransactionDisputeModel model)
         {
             var dispute = new TransactionDispute
             {
@@ -30,7 +30,7 @@ namespace web_api.Service
             await _disputeRepository.Create(dispute);
         }
 
-        public async Task<IEnumerable<TransactionDispute>> GetAll()
+        public async Task<IEnumerable<TransactionDispute>> GetAllTransactionDisputes()
         {
             return await _disputeRepository.GetAll()
                 .Include(d => d.Transaction)
@@ -45,16 +45,16 @@ namespace web_api.Service
             return await _disputeRepository.GetAll()
                 .Include(d => d.Transaction)
                 .FirstOrDefaultAsync(d =>
-                    d.TransactionDisputeId.Equals(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    d.TransactionId.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    d.TransactionDisputeId.ToLower() == searchTerm.ToLower() ||
+                    d.TransactionId.ToLower() == searchTerm.ToLower());
         }
 
-        public async Task Remove(string transactionDisputeIdOrTransactionId)
+        public async Task RemoveTransactionDispute(string transactionDisputeId)
         {
             var dispute = await _disputeRepository.GetAll()
                 .FirstOrDefaultAsync(d =>
-                    d.TransactionDisputeId.Equals(transactionDisputeIdOrTransactionId, StringComparison.OrdinalIgnoreCase) ||
-                    d.TransactionId.Equals(transactionDisputeIdOrTransactionId, StringComparison.OrdinalIgnoreCase));
+                    d.TransactionDisputeId.ToLower() == transactionDisputeId.ToLower() ||
+                    d.TransactionId.ToLower() == transactionDisputeId.ToLower());
 
             if (dispute != null)
             {
@@ -62,10 +62,10 @@ namespace web_api.Service
             }
         }
 
-        public async Task Update(TransactionDisputeModel model, string transactionDisputeId)
+        public async Task UpdateTransactionDispute(TransactionDisputeModel model, string transactionDisputeId)
         {
             var dispute = await _disputeRepository.GetAll()
-                .FirstOrDefaultAsync(d => d.TransactionDisputeId.Equals(transactionDisputeId, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(d => d.TransactionDisputeId.ToString() ==  transactionDisputeId.ToString());
 
             if (dispute != null)
             {

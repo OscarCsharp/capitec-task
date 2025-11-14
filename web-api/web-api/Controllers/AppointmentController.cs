@@ -2,6 +2,7 @@
 using web_api.Interface;
 using web_api.Model;
 using web_api.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace web_api.Controllers
 {
@@ -16,41 +17,51 @@ namespace web_api.Controllers
             _appointmentService = appointmentService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllAppointments")]
         public async Task<IActionResult> GetAll()
         {
-            var appointments = await _appointmentService.GetAll();
+            var appointments = await _appointmentService.GetAllAppointments();
             return Ok(appointments);
         }
 
-        [HttpGet("{searchTerm}")]
-        public async Task<IActionResult> GetAppointment(string searchTerm)
+        [HttpGet("GetAppointment{appointmentId}")]
+        public async Task<IActionResult> GetAppointment(string appointmentId)
         {
-            var appointment = await _appointmentService.GetAppointment(searchTerm);
+            var appointment = await _appointmentService.GetAppointment(appointmentId);
             if (appointment == null)
                 return NotFound(new { message = "Appointment not found." });
 
             return Ok(appointment);
         }
 
-        [HttpPost]
+
+        [HttpGet("UserAppointments/{userId}")]
+        public async Task<IActionResult> GetAppointmentsByUserId(string userId)
+        {
+            var appointments = await _appointmentService.GetAllAppointments();
+            var userAppointments = appointments.Where(a => a.UserId == userId).ToList();
+            return Ok(userAppointments);
+        }
+
+
+        [HttpPost("AddAppointment")]
         public async Task<IActionResult> Add([FromBody] AppointmentModel model)
         {
-            await _appointmentService.Add(model);
+            await _appointmentService.AddAppointment(model);
             return Ok(new { message = "Appointment created successfully." });
         }
 
-        [HttpPut("{appointmentId}")]
+        [HttpPut("UpdateAppointment/{appointmentId}")]
         public async Task<IActionResult> Update(string appointmentId, [FromBody] AppointmentModel model)
         {
-            await _appointmentService.Update(model, appointmentId);
+            await _appointmentService.UpdateAppointment(model, appointmentId);
             return Ok(new { message = "Appointment updated successfully." });
         }
 
-        [HttpDelete("{appointmentIdOrUserId}")]
+        [HttpDelete("RemoveAppointment/{appointmentId}")]
         public async Task<IActionResult> Remove(string appointmentIdOrUserId)
         {
-            await _appointmentService.Remove(appointmentIdOrUserId);
+            await _appointmentService.RemoveAppointment(appointmentIdOrUserId);
             return Ok(new { message = "Appointment removed successfully." });
         }
     }

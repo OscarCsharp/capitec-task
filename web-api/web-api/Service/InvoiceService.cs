@@ -15,12 +15,12 @@ namespace web_api.Service
             _invoiceRepository = invoiceRepository;
         }
 
-        public async Task Add(InvoiceModel model)
+        public async Task AddInvoice(InvoiceModel model)
         {
             var invoice = new Invoice
             {
                 InvoiceId = Guid.NewGuid().ToString(),
-                Id = model.BusinessId,
+                UserId = model.BusinessId,
                 InvoiceNumber = model.InvoiceNumber,
                 IssueDate = model.IssueDate,
                 DueDate = model.DueDate,
@@ -31,7 +31,7 @@ namespace web_api.Service
             await _invoiceRepository.Create(invoice);
         }
 
-        public async Task<IEnumerable<Invoice>> GetAll()
+        public async Task<IEnumerable<Invoice>> GetAllInvoices()
         {
             return await _invoiceRepository.GetAll()
                 .Include(i => i.User)
@@ -47,18 +47,13 @@ namespace web_api.Service
             return await _invoiceRepository.GetAll()
                 .Include(i => i.User)
                 .Include(i => i.Notifications)
-                .FirstOrDefaultAsync(i =>
-                    i.InvoiceId.Equals(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    i.Id.Equals(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    i.InvoiceNumber.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(i => i.InvoiceId.ToLower() ==  searchTerm.ToLower() || i.UserId.ToLower() == searchTerm.ToLower() || i.InvoiceNumber.ToLower() == searchTerm.ToLower());
         }
 
-        public async Task Remove(string invoiceIdOrUserId)
+        public async Task RemoveInvoice(string invoiceId)
         {
             var invoice = await _invoiceRepository.GetAll()
-                .FirstOrDefaultAsync(i =>
-                    i.InvoiceId.Equals(invoiceIdOrUserId, StringComparison.OrdinalIgnoreCase) ||
-                    i.Id.Equals(invoiceIdOrUserId, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(i => i.InvoiceId.ToLower() == invoiceId.ToLower());
 
             if (invoice != null)
             {
@@ -66,10 +61,10 @@ namespace web_api.Service
             }
         }
 
-        public async Task Update(InvoiceModel model, string invoiceId)
+        public async Task UpdateInvoice(InvoiceModel model, string invoiceId)
         {
             var invoice = await _invoiceRepository.GetAll()
-                .FirstOrDefaultAsync(i => i.InvoiceId.Equals(invoiceId, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(i => i.InvoiceId.ToLower() == invoiceId.ToLower());
 
             if (invoice != null)
             {

@@ -4,7 +4,7 @@ namespace web_api.Entities
 {
     public class InvoiceNotification
     {
-        public string Id { get; set; } = string.Empty;
+        public string InvoiceNotificationId { get; set; } = string.Empty;
 
         [Required]
         public string InvoiceId { get; set; } = string.Empty ;

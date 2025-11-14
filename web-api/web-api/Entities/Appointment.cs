@@ -8,7 +8,7 @@ namespace web_api.Entities
         public string AppointmentId { get; set; } = string.Empty;
 
         [Required]
-        public string Id { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         public User? User { get; set; }
 
         [Required]

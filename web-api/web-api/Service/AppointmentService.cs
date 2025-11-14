@@ -14,12 +14,12 @@ namespace web_api.Service
         {
             _appointmentRepository = appointmentRepository;
         }
-        public async Task Add(AppointmentModel model)
+        public async Task AddAppointment(AppointmentModel model)
         {
             var appointment = new Appointment
             {
                 AppointmentId = Guid.NewGuid().ToString(),
-                Id = model.CustomerId,
+                UserId = model.CustomerId,
                 BranchId = model.BranchId,
                 ScheduledDate = model.ScheduledDate,
                 IsConfirmed = model.IsConfirmed
@@ -29,7 +29,7 @@ namespace web_api.Service
         }
 
 
-        public async Task<IEnumerable<Appointment>> GetAll()
+        public async Task<IEnumerable<Appointment>> GetAllAppointments()
         {
             return await _appointmentRepository.GetAll()
                     .Include(a => a.User)
@@ -37,25 +37,23 @@ namespace web_api.Service
                     .ToListAsync();
         }
 
-        public async Task<Appointment?> GetAppointment(string searchTerm)
+        public async Task<Appointment?> GetAppointment(string appointmentId)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
+            if (string.IsNullOrWhiteSpace(appointmentId))
                 return null;
 
             return await _appointmentRepository.GetAll()
                 .Include(a => a.User)
-                .Include(a => a.Branch)
-                .FirstOrDefaultAsync(a =>
-                    a.AppointmentId.ToString().Equals(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    a.Id.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
+                .Include(a => a.Branch).Where(a => a.AppointmentId == appointmentId)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task Remove(string appointmentIdOrUserId)
+        public async Task RemoveAppointment(string appointmentId)
         {
             var appointment = await _appointmentRepository.GetAll()
                 .FirstOrDefaultAsync(a =>
-                    a.AppointmentId.ToString() == appointmentIdOrUserId ||
-                    a.Id == appointmentIdOrUserId);
+                    a.AppointmentId.ToString() == appointmentId ||
+                    a.AppointmentId == appointmentId);
 
             if (appointment != null)
             {
@@ -63,7 +61,7 @@ namespace web_api.Service
             }
         }
 
-        public async Task Update(AppointmentModel model,string AppointmentId)
+        public async Task UpdateAppointment(AppointmentModel model,string AppointmentId)
         {
             var appointment = await _appointmentRepository.GetAll()
                 .FirstOrDefaultAsync(a => a.AppointmentId.ToString() == AppointmentId);

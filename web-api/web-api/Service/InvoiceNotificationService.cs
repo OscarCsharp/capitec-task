@@ -15,11 +15,11 @@ namespace web_api.Service
             _notificationRepository = notificationRepository;
         }
 
-        public async Task Add(InvoiceNotificationModel model)
+        public async Task AddInvoiceNotification(InvoiceNotificationModel model)
         {
             var notification = new InvoiceNotification
             {
-                Id = Guid.NewGuid().ToString(),
+                InvoiceNotificationId = Guid.NewGuid().ToString(),
                 InvoiceId = model.InvoiceId,
                 SentDate = DateTime.Now,
                 Message = model.Message,
@@ -29,7 +29,7 @@ namespace web_api.Service
             await _notificationRepository.Create(notification);
         }
 
-        public async Task<IEnumerable<InvoiceNotification>> GetAll()
+        public async Task<IEnumerable<InvoiceNotification>> GetAllInvoiceNotifications()
         {
             return await _notificationRepository.GetAll()
                 .Include(n => n.Invoice)
@@ -44,16 +44,16 @@ namespace web_api.Service
             return await _notificationRepository.GetAll()
                 .Include(n => n.Invoice)
                 .FirstOrDefaultAsync(n =>
-                    n.Id.Equals(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    n.InvoiceId.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    n.InvoiceNotificationId.ToLower() == searchTerm.ToLower() ||
+                    n.InvoiceId.ToLower() == searchTerm.ToLower());
         }
 
-        public async Task Remove(string invoiceNotificationIdOrInvoiceId)
+        public async Task RemoveInvoiceNotification(string invoiceNotificationId)
         {
             var notification = await _notificationRepository.GetAll()
                 .FirstOrDefaultAsync(n =>
-                    n.Id.Equals(invoiceNotificationIdOrInvoiceId, StringComparison.OrdinalIgnoreCase) ||
-                    n.InvoiceId.Equals(invoiceNotificationIdOrInvoiceId, StringComparison.OrdinalIgnoreCase));
+                    n.InvoiceNotificationId.ToLower() == invoiceNotificationId.ToLower() ||
+                    n.InvoiceId.ToLower() == invoiceNotificationId.ToLower());
 
             if (notification != null)
             {
@@ -61,10 +61,10 @@ namespace web_api.Service
             }
         }
 
-        public async Task Update(InvoiceNotificationModel model, string invoiceNotificationId)
+        public async Task UpdateInvoiceNotification(InvoiceNotificationModel model, string invoiceNotificationId)
         {
             var notification = await _notificationRepository.GetAll()
-                .FirstOrDefaultAsync(n => n.Id.Equals(invoiceNotificationId, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(n => n.InvoiceNotificationId.ToLower() == invoiceNotificationId.ToLower());
 
             if (notification != null)
             {

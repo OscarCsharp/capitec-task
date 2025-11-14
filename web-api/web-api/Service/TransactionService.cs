@@ -16,21 +16,26 @@ namespace web_api.Service
             _transactionRepository = transactionRepository;
         }
 
-        public async Task Add(TransactionModel model)
+        public async Task AddTransaction(TransactionModel model)
         {
             var transaction = new Transaction
             {
                 TransactionId = Guid.NewGuid().ToString(),
-                Id = model.CustomerId,
+                UserId = model.CustomerId,
                 Date = DateTime.Now,
                 Amount = model.Amount,
-                Description = model.Description
+                BankName = model.BankName,
+                AccountNumber = model.AccountNumber,
+                AccountType = model.AccountType,
+                referenceNumber = model.referenceNumber
+
             };
+
 
             await _transactionRepository.Create(transaction);
         }
 
-        public async Task<IEnumerable<Transaction>> GetAll()
+        public async Task<IEnumerable<Transaction>> GetAllTransactions()
         {
             return await _transactionRepository.GetAll()
                 .Include(t => t.User)
@@ -47,16 +52,16 @@ namespace web_api.Service
                 .Include(t => t.User)
                 .Include(t => t.Dispute)
                 .FirstOrDefaultAsync(t =>
-                    t.TransactionId.Equals(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    t.Id.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    t.TransactionId.ToLower() == searchTerm.ToLower() ||
+                    t.UserId.ToLower() == searchTerm.ToLower());
         }
 
-        public async Task Remove(string transactionIdOrUserId)
+        public async Task RemoveTransaction(string transactionId)
         {
             var transaction = await _transactionRepository.GetAll()
                 .FirstOrDefaultAsync(t =>
-                    t.TransactionId.Equals(transactionIdOrUserId, StringComparison.OrdinalIgnoreCase) ||
-                    t.Id.Equals(transactionIdOrUserId, StringComparison.OrdinalIgnoreCase));
+                    t.TransactionId.ToLower() == transactionId.ToLower() ||
+                    t.UserId.ToLower() == transactionId.ToLower());
 
             if (transaction != null)
             {
@@ -64,16 +69,19 @@ namespace web_api.Service
             }
         }
 
-        public async Task Update(TransactionModel model, string transactionId)
+        public async Task UpdateTransaction(TransactionModel model, string transactionId)
         {
             var transaction = await _transactionRepository.GetAll()
-                .FirstOrDefaultAsync(t => t.TransactionId.Equals(transactionId, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefaultAsync(t => t.TransactionId.ToLower() == transactionId.ToLower());
 
             if (transaction != null)
             {
                 transaction.Date = DateTime.Now;
                 transaction.Amount = model.Amount;
-                transaction.Description = model.Description;
+                transaction.BankName = model.BankName;
+                transaction.AccountNumber = model.AccountNumber;
+                transaction.AccountType = model.AccountType;
+                transaction.referenceNumber = model.referenceNumber;
 
                 await _transactionRepository.Update(transaction);
             }

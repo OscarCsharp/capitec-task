@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace web_api.Entities
 {
@@ -6,9 +7,8 @@ namespace web_api.Entities
     {
         public string TransactionId { get; set; } = string.Empty;
 
-
         [Required]
-        public string Id { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         public User? User { get; set; }
 
         [Required]
@@ -17,10 +17,15 @@ namespace web_api.Entities
         [Required]
         public decimal Amount { get; set; }
 
-        public string Description { get; set; } = string.Empty;
-
+        public string BankName { get; set; } = string.Empty;
+        public string AccountNumber { get; set; } = string.Empty;
+        public string AccountType { get; set; } = string.Empty;
+        public string referenceNumber { get; set; } = string.Empty;
         public bool IsDisputed => Dispute != null;
 
         public TransactionDispute? Dispute { get; set; }
     }
 }
+
+
+;
